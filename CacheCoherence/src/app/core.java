@@ -13,7 +13,7 @@ public class core extends Thread{
     private String direction;             //Memory Direction
     private String write_data;            //Set data to write
     private String final_instruction;     //Set the final struction
-
+    private String[][] L1 = {{"Bloque", "Coherencia", "Memoria", "Dato"},{"0","","",""},{"1","","",""}};
     
     /**
      * Constructor of the CORE.
@@ -143,6 +143,11 @@ public class core extends Thread{
     //Getter of the final instrucion
     public String getFinalInstr() {
         return final_instruction;
+    }
+
+    //Getter of the L1 memory
+    public String[][] getL1() {
+        return L1;
     }
 
     //Set core on pause
