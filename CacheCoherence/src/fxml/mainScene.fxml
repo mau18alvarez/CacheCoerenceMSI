@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="569.0" prefWidth="1285.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainSceneController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="503.0" prefWidth="1285.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainSceneController">
    <children>
-      <HBox layoutX="43.0" layoutY="42.0" prefHeight="225.0" prefWidth="300.0">
+      <HBox layoutX="43.0" layoutY="88.0" prefHeight="120.0" prefWidth="300.0">
          <children>
-            <TableView fx:id="L1P00" prefHeight="300.0" prefWidth="319.0">
+            <TableView fx:id="L1P00" prefHeight="120.0" prefWidth="300.0">
               <columns>
                 <TableColumn prefWidth="87.0" text="C1" />
                 <TableColumn prefWidth="77.0" text="C2" />
@@ -17,7 +19,7 @@
               </columns>
             </TableView>
          </children></HBox>
-      <HBox layoutX="384.0" layoutY="42.0" prefHeight="225.0" prefWidth="300.0">
+      <HBox layoutX="384.0" layoutY="88.0" prefHeight="120.0" prefWidth="300.0">
          <children>
             <TableView fx:id="L1P01" prefHeight="225.0" prefWidth="317.0">
               <columns>
@@ -27,7 +29,7 @@
             </TableView>
          </children>
       </HBox>
-      <HBox layoutX="723.0" layoutY="42.0" prefHeight="225.0" prefWidth="300.0">
+      <HBox layoutX="723.0" layoutY="88.0" prefHeight="120.0" prefWidth="300.0">
          <children>
             <TableView fx:id="L2P0" prefHeight="225.0" prefWidth="335.0">
               <columns>
@@ -37,7 +39,7 @@
             </TableView>
          </children>
       </HBox>
-      <HBox layoutX="43.0" layoutY="313.0" prefHeight="225.0" prefWidth="300.0">
+      <HBox layoutX="43.0" layoutY="313.0" prefHeight="120.0" prefWidth="300.0">
          <children>
             <TableView fx:id="L1P10" prefHeight="300.0" prefWidth="319.0">
                <columns>
@@ -47,7 +49,7 @@
             </TableView>
          </children>
       </HBox>
-      <HBox layoutX="384.0" layoutY="313.0" prefHeight="225.0" prefWidth="300.0">
+      <HBox layoutX="384.0" layoutY="313.0" prefHeight="120.0" prefWidth="300.0">
          <children>
             <TableView fx:id="L1P11" prefHeight="300.0" prefWidth="319.0">
                <columns>
@@ -57,7 +59,7 @@
             </TableView>
          </children>
       </HBox>
-      <HBox layoutX="723.0" layoutY="313.0" prefHeight="225.0" prefWidth="300.0">
+      <HBox layoutX="723.0" layoutY="313.0" prefHeight="120.0" prefWidth="300.0">
          <children>
             <TableView fx:id="L2P1" prefHeight="300.0" prefWidth="319.0">
                <columns>
@@ -67,7 +69,7 @@
             </TableView>
          </children>
       </HBox>
-      <HBox layoutX="1062.0" layoutY="42.0" prefHeight="495.0" prefWidth="197.0">
+      <HBox layoutX="1063.0" layoutY="87.0" prefHeight="396.0" prefWidth="197.0">
          <children>
             <TableView fx:id="MEM_TABLE" prefHeight="300.0" prefWidth="319.0">
                <columns>
@@ -77,5 +79,40 @@
             </TableView>
          </children>
       </HBox>
+      <Label layoutX="87.0" layoutY="53.0" text="Cache L1, Chip P0 Núcleo 0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="433.0" layoutY="53.0" text="Cache L1, Chip P0 Núcleo 1">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="87.0" layoutY="278.0" text="Cache L1, Chip P1 Núcleo 0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="433.0" layoutY="278.0" text="Cache L1, Chip P1 Núcleo 1">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="802.0" layoutY="53.0" text="Cache L2, Chip P0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="802.0" layoutY="278.0" text="Cache L2, Chip P1">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="1126.0" layoutY="53.0" text="Memoria">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

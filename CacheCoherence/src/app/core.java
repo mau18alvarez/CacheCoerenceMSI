@@ -13,7 +13,7 @@ public class core extends Thread{
     private String direction;             //Memory Direction
     private String write_data;            //Set data to write
     private String final_instruction;     //Set the final struction
-    private String[][] L1 = {{"Bloque", "Coherencia", "Memoria", "Dato"},{"0","","",""},{"1","","",""}};
+    private String[][] L1 = {{"Bloque", "Coherencia", "Memoria", "Dato"},{"","","",""}};
     
     /**
      * Constructor of the CORE.
@@ -35,6 +35,11 @@ public class core extends Thread{
                 Thread.sleep(1000);             //Generate requests every second
                 generate_instruction();         //set the instruction
                 generate_final_inst(chip_id, core_id, instruction_type, direction, write_data); //set the final instruction
+                //Set the values to print on Interface
+                this.L1[1][0] = Integer.toString(core_id);
+                this.L1[1][1] = instruction_type;
+                this.L1[1][2] = direction;
+                this.L1[1][3] = write_data;
                 System.out.println(final_instruction); 
             }
         }catch (InterruptedException e){

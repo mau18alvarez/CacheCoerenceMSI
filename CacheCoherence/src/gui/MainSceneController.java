@@ -6,13 +6,21 @@ import javafx.scene.control.TableView;
 
 public class MainSceneController {
 
+    //Declaration to render the tables
     public TableView <String[]> L1P00;
+    public TableView <String[]> L1P01;
+    public TableView <String[]> L1P10;
+    public TableView <String[]> L1P11;
+    public TableView <String[]> L2P0;
+    public TableView <String[]> L2P1;
+    public TableView<String[]> principalMem;
 
+
+    //Function to populate the tables on the view
     public void populateTable(TableView<String[]> target, String[][] source){
 
     int numRows = source.length ;
     int numCols = source[0].length ;
-
     target.getItems().clear();
     target.getColumns().clear();
 

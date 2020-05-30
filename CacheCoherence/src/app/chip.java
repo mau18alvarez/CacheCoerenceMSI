@@ -8,9 +8,9 @@ public class chip extends Thread{
 
     public chip(int chip_id){
         this.core0 = new core(0, chip_id);
-        this.core1 = new core(1, chip_id);
+        //this.core1 = new core(1, chip_id);
         this.core0.start();
-        this.core1.start();
+        //this.core1.start();
     }
 
     public core getCore0(){

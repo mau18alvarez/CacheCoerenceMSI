@@ -10,7 +10,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -21,6 +20,12 @@ public class Main extends Application {
         primaryStage.setTitle("CacheCoherence");
         primaryStage.setResizable(false);
 
+        Platform.setImplicitExit(true);
+        primaryStage.setOnCloseRequest((ae) -> {
+            Platform.exit();
+            System.exit(0);
+        });
+
         //ADD FXML files -> SceneBuilder
         FXMLLoader loader = new FXMLLoader();
         URL xmlUrl = getClass().getResource("../fxml/mainScene.fxml");
@@ -30,15 +35,29 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     
-        //Label helloWorldLabel = new Label("Hello world!");
-        //helloWorldLabel.setAlignment(Pos.CENTER);
-        //Scene primaryScene = new Scene(helloWorldLabel);
-        //primaryStage.setScene(primaryScene);
 
-        chip cpu1 = new chip(1);
-        //chip cpu2 = new chip(2);
-        cpu1.start();
-        //cpu2.start();     
+        chip cpu0 = new chip(0);
+        //chip cpu1 = new chip(1);
+        cpu0.start();
+        //cpu1.start(); 
+        
+        Thread thread = new Thread(() -> {
+            while(true){
+              try {
+                  Thread.sleep(500);
+              } catch (InterruptedException exc) {
+                  throw new Error("Unexpected interruption", exc);
+              }
+              Platform.runLater(() -> controller.populateTable(controller.L1P00,cpu0.getCore0().getL1()));
+              //Platform.runLater(() -> controller.printMatrix(controller.L1P01,cpu0.getCore1().getL1()));
+              //Platform.runLater(() -> controller.printMatrix(controller.L1P10,cpu1.getCore0().getL1()));
+              //Platform.runLater(() -> controller.printMatrix(controller.L1P11,cpu1.getCore1().getL1()));
+              
+              
+            }
+          });
+          thread.setDaemon(true);
+          thread.start();
     }
     
 
