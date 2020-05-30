@@ -13,11 +13,11 @@ public class MainSceneController {
     public TableView <String[]> L1P11;
     public TableView <String[]> L2P0;
     public TableView <String[]> L2P1;
-    public TableView<String[]> principalMem;
+    public TableView <String[]> principalMem;
 
 
     //Function to populate the tables on the view
-    public void populateTable(TableView<String[]> target, String[][] source){
+    public void populateTable(TableView <String[]> target, String[][] source){
 
     int numRows = source.length ;
     int numCols = source[0].length ;

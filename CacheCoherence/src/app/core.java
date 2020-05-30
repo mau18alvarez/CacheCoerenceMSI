@@ -6,14 +6,15 @@ import java.util.Random;
 public class core extends Thread{
 
     Thread t;
-    public boolean pause;                 //Core pause or running
+    public boolean coreStatus;            //Core pause or running
     private int core_id;                  //Id of the core
     private int chip_id;                  //Id of the chip father
     private String instruction_type;      //1->Read - 2->Write - 3->Calc
     private String direction;             //Memory Direction
     private String write_data;            //Set data to write
     private String final_instruction;     //Set the final struction
-    private String[][] L1 = {{"Bloque", "Coherencia", "Memoria", "Dato"},{"","","",""}};
+    private String parse_instruction;     //Set the final struction for parse
+    private String[][] L1 = {{"Block", "Coherence", "Memory Dir", "Data"},{"","","",""},{"","","",""}};
     
     /**
      * Constructor of the CORE.
@@ -25,22 +26,24 @@ public class core extends Thread{
         this.direction = "";            //set initial direction
         this.write_data = "";           //set initial data
         this.final_instruction = "";    //set initial final instruction
-        this.pause = false;             //set initial value for pause
+        this.parse_instruction = "";    //set initial final instruction
+        this.coreStatus = true;         //set initial value for Status ->TRUE ON    ->FALSE OFF
     }
 
 
     public void run () {
         try{
-            while(pause == false){
+            while(coreStatus == true){
                 Thread.sleep(1000);             //Generate requests every second
                 generate_instruction();         //set the instruction
                 generate_final_inst(chip_id, core_id, instruction_type, direction, write_data); //set the final instruction
+                generate_parse_inst(chip_id, core_id, instruction_type, direction, write_data); //set the final instruction for parse
                 //Set the values to print on Interface
                 this.L1[1][0] = Integer.toString(core_id);
                 this.L1[1][1] = instruction_type;
                 this.L1[1][2] = direction;
                 this.L1[1][3] = write_data;
-                System.out.println(final_instruction); 
+                System.out.println(parse_instruction); 
             }
         }catch (InterruptedException e){
             System.out.println("Sleep Error");
@@ -126,7 +129,21 @@ public class core extends Thread{
 
     public void generate_final_inst(int chip_id, int core_id, String instruction_type, String direction, String write_data){
         this.final_instruction = "P" + Integer.toString(chip_id) + ", " + Integer.toString(core_id) + ": " + instruction_type + " " + direction + "; " + write_data;  
-    }   
+    } 
+    
+    public void generate_parse_inst(int chip_id, int core_id, String instruction_type, String direction, String write_data){
+        switch (instruction_type) {
+            case "READ":
+                this.parse_instruction = "P"+Integer.toString(chip_id) + ";" + Integer.toString(core_id) + ";" + instruction_type + ";" + direction;
+                break;
+            case "CALC":
+                this.parse_instruction = "P" + Integer.toString(chip_id) + ";" + Integer.toString(core_id) + ";" + instruction_type;
+                break;
+            case "WRITE":
+                this.parse_instruction = "P" + Integer.toString(chip_id) + ";" + Integer.toString(core_id) + ";" + instruction_type + ";" + direction + ";" + write_data;  
+                break;
+        }
+    }
 
 
     
@@ -157,12 +174,12 @@ public class core extends Thread{
 
     //Set core on pause
     public void pauseCore(){
-        this.pause = true;
+        this.coreStatus = false;
     }
 
     //Resume core from pause
     public void resumeCore(){
-        this.pause = false;
+        this.coreStatus = true;
     }
 }
 

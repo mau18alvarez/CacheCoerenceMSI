@@ -1,9 +1,9 @@
 package gui;
 
 import app.chip;
-import app.core;
+import app.mainMemory;
+import app.memoryLine;
 
-import java.io.InputStream;
 import java.net.URL;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -35,11 +35,11 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     
-
-        chip cpu0 = new chip(0);
-        //chip cpu1 = new chip(1);
-        cpu0.start();
-        //cpu1.start(); 
+        //Initializate the CHIPS
+        chip chip0 = new chip(0);
+        chip chip1 = new chip(1);
+        chip0.start();
+        chip1.start(); 
         
         Thread thread = new Thread(() -> {
             while(true){
@@ -48,10 +48,14 @@ public class Main extends Application {
               } catch (InterruptedException exc) {
                   throw new Error("Unexpected interruption", exc);
               }
-              Platform.runLater(() -> controller.populateTable(controller.L1P00,cpu0.getCore0().getL1()));
-              //Platform.runLater(() -> controller.printMatrix(controller.L1P01,cpu0.getCore1().getL1()));
-              //Platform.runLater(() -> controller.printMatrix(controller.L1P10,cpu1.getCore0().getL1()));
-              //Platform.runLater(() -> controller.printMatrix(controller.L1P11,cpu1.getCore1().getL1()));
+              Platform.runLater(() -> controller.populateTable(controller.L1P00, chip0.getCore0().getL1()));
+              Platform.runLater(() -> controller.populateTable(controller.L1P01, chip0.getCore1().getL1()));
+              Platform.runLater(() -> controller.populateTable(controller.L1P10, chip1.getCore0().getL1()));
+              Platform.runLater(() -> controller.populateTable(controller.L1P11, chip1.getCore1().getL1()));
+            //Platform.runLater(() -> controller.populateTable(controller.LwP11, cpu1.getCore1().getL1()));
+
+
+              //Platform.runLater(() -> controller.populateTable(controller.principalMem, mainMemory.getRenderMem()));
               
               
             }
@@ -62,7 +66,6 @@ public class Main extends Application {
     
 
     public static void main(String[] args) {
-        // Here you can work with args - command line parameters
         Application.launch(args);
     }
 }
