@@ -2,7 +2,6 @@ package gui;
 
 import app.chip;
 import app.mainMemory;
-import app.memoryLine;
 
 import java.net.URL;
 import javafx.application.Application;
@@ -35,29 +34,29 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     
-        //Initializate the CHIPS
-        chip chip0 = new chip(0);
-        chip chip1 = new chip(1);
-        chip0.start();
-        chip1.start(); 
-        
+        //Initializate the Memory with the chips
+        mainMemory sisMem = new mainMemory();
+        sisMem.start();
+
         Thread thread = new Thread(() -> {
             while(true){
-              try {
-                  Thread.sleep(500);
-              } catch (InterruptedException exc) {
-                  throw new Error("Unexpected interruption", exc);
-              }
-              Platform.runLater(() -> controller.populateTable(controller.L1P00, chip0.getCore0().getL1()));
-              Platform.runLater(() -> controller.populateTable(controller.L1P01, chip0.getCore1().getL1()));
-              Platform.runLater(() -> controller.populateTable(controller.L1P10, chip1.getCore0().getL1()));
-              Platform.runLater(() -> controller.populateTable(controller.L1P11, chip1.getCore1().getL1()));
-            //Platform.runLater(() -> controller.populateTable(controller.LwP11, cpu1.getCore1().getL1()));
+                //Render Cache L1 
+                Platform.runLater(() -> controller.populateTable(controller.L1P00, sisMem.getChip0().getCore0().getL1()));
+                Platform.runLater(() -> controller.populateTable(controller.L1P01, sisMem.getChip0().getCore1().getL1()));
+                Platform.runLater(() -> controller.populateTable(controller.L1P10, sisMem.getChip1().getCore0().getL1()));
+                Platform.runLater(() -> controller.populateTable(controller.L1P11, sisMem.getChip1().getCore1().getL1()));
 
+                //Render Cache L2
+                Platform.runLater(() -> controller.populateTable(controller.L2P0, sisMem.getChip0().getL2()));
+                Platform.runLater(() -> controller.populateTable(controller.L2P1, sisMem.getChip1().getL2()));
 
-              //Platform.runLater(() -> controller.populateTable(controller.principalMem, mainMemory.getRenderMem()));
-              
-              
+                //Render Main Memory
+                Platform.runLater(() -> controller.populateTable(controller.MEM_TABLE, sisMem.getMemory()));
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    System.out.println("Fail in Render Thread:" + e.getMessage());
+                }
             }
           });
           thread.setDaemon(true);

@@ -13,7 +13,7 @@ public class MainSceneController {
     public TableView <String[]> L1P11;
     public TableView <String[]> L2P0;
     public TableView <String[]> L2P1;
-    public TableView <String[]> principalMem;
+    public TableView <String[]> MEM_TABLE;
 
 
     //Function to populate the tables on the view

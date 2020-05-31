@@ -2,8 +2,6 @@ package app;
 
 import java.util.Random;
 
-import sun.security.util.PropertyExpander.ExpandException;
-
 
 public class core extends Thread{
 
@@ -39,17 +37,17 @@ public class core extends Thread{
     public void run () {
         try{
             while(coreStatus == true){
-                Thread.sleep(1000);                  //Generate requests every second
                 this.generate_instruction();         //set the instruction
                 this.generate_final_inst(chip_id, core_id, instruction_type, direction, write_data); //set the final instruction
                 this.generate_parse_inst(chip_id, core_id, instruction_type, direction, write_data); //set the final instruction for parse
-                this.MSI(instruction_type, direction, write_data);
+                this.MSI(core_id, chip_id, instruction_type, direction, write_data);
+                Thread.sleep(1000);                  //Generate requests every second
                 //Set the values to print on Interface
                 //this.cacheL1[1][0] = Integer.toString(core_id);
                 //this.cacheL1[1][1] = instruction_type;
                 //this.cacheL1[1][2] = direction;
                 //this.cacheL1[1][3] = write_data;
-                //System.out.println(parse_instruction); 
+                System.out.println(this.final_instruction); 
             }
         }catch (InterruptedException e){
             System.out.println("Fail in Core Main Thread:" + e.getMessage());
@@ -101,21 +99,23 @@ public class core extends Thread{
     /**
      * Creation of a new memory direction.
      */
-    public void generate_mem_dir( ){
-        int random = Binomial(15, 0.375);
+    private String generate_mem_dir( ){
+        //int random = Binomial(16, 0.1);
+        Random rand = new Random();
+        int random = rand.nextInt(16);
         String result =  Integer.toBinaryString(random);
 
         if (random == 0 || random == 1){
-            this.direction = "000" + result;
+            return  "000" + result;
         }
         if (random == 2 || random == 3){
-            this.direction = "00" + result;
+            return  "00" + result;
         }
         if (random >= 4 && random <= 7){
-            this.direction = "0" + result;
+            return  "0" + result;
         }
         else{
-            this.direction = result;
+            return result;
         }
     }
 
@@ -123,16 +123,17 @@ public class core extends Thread{
      * Creation of a new instruction and set the data.
      */
     public void generate_instruction( ){
+        System.out.println("Generando instuccion");
         int random = Binomial(3, 0.34);
 
         if (random == 0){
             this.instruction_type = "READ";
             this.write_data = "";
-            generate_mem_dir();             //set the direction of the instruction
+            this.direction = generate_mem_dir();             //set the direction of the instruction
         }else if (random == 1){
             this.instruction_type = "WRITE";
             generate_data();
-            generate_mem_dir();             //set the direction of the instruction
+            this.direction = generate_mem_dir();             //set the direction of the instruction
         }else{
             this.instruction_type = "CALC";
             this.write_data = "";
@@ -194,25 +195,19 @@ public class core extends Thread{
         }
     }
 
-    private void MSI(String instruction_type, String direction, String write_data){
+    private void MSI(int core_id, int chip_id, String instruction_type, String direction, String write_data){
         //EXCLUSIVE (M)
         if (instruction_type.equals("WRITE")){
-            //Cpu write hit I -> M
-            if (checkOnCache(direction) == true){
-                this.writeBusMiss = false; //busmiss
-                this.writeOnCache(direction, write_data);
-                System.out.println("Write Hit"); 
-            }else{
-                //CPU write miss
-                //Write on memory
-                int i = cacheMap(direction);
-                this.cacheL1[i][1] = "M";
-                this.cacheL1[i][2] = direction;
-                this.cacheL1[i][3] = write_data;
-                //Place write miss
-                this.writeBusMiss = true;
-                System.out.println("Write Miss"); 
-            }
+            //Write on memory
+            int i = cacheMap(direction);
+            this.cacheL1[i][1] = "M";
+            this.cacheL1[i][2] = direction;
+            this.cacheL1[i][3] = write_data;
+            //Place write miss
+            System.out.println("Se esbribe en L1 proveniente de+ chip " + chip_id + " core " + core_id);
+            this.writeBusMiss = true;
+            //System.out.println("Write Miss"); 
+            
 
         }else if (instruction_type.equals("READ")){
             //Cpu read hit
@@ -226,16 +221,16 @@ public class core extends Thread{
             }else{
                 //READ miss
                 this.readBusMiss = true;    //Place ReadMiss on bus
-                System.out.println("Read Miss"); 
+                //System.out.println("Read Miss"); 
                 //Escribir a memoria
             }
 
         }else if (instruction_type.equals("CALC")){
             try{
                 Thread.sleep(500);
-                System.out.println("Calc"); 
+                //System.out.println("Calc"); 
             }catch(Exception e){
-                System.out.println("Fail in Calc Thread:" + e.getMessage());
+                //System.out.println("Fail in Calc Thread:" + e.getMessage());
             }
         }
     }

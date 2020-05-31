@@ -69,9 +69,9 @@
             </TableView>
          </children>
       </HBox>
-      <HBox layoutX="1063.0" layoutY="87.0" prefHeight="396.0" prefWidth="197.0">
+      <HBox layoutX="1063.0" layoutY="43.0" prefHeight="440.0" prefWidth="197.0">
          <children>
-            <TableView fx:id="MEM_TABLE" prefHeight="300.0" prefWidth="319.0">
+            <TableView fx:id="MEM_TABLE" prefHeight="430.0" prefWidth="197.0">
                <columns>
                   <TableColumn prefWidth="75.0" text="C1" />
                   <TableColumn prefWidth="75.0" text="C2" />
@@ -109,7 +109,7 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <Label layoutX="1126.0" layoutY="53.0" text="Memoria">
+      <Label layoutX="1126.0" layoutY="15.0" text="Memoria">
          <font>
             <Font size="18.0" />
          </font>
