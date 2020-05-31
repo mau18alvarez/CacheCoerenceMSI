@@ -5,7 +5,7 @@ import java.util.Random;
 import sun.security.util.PropertyExpander.ExpandException;
 
 
-public class core extends Thread{
+public class coreT extends Thread{
 
     Thread t;
     public boolean coreStatus;            //Core pause or running
@@ -17,6 +17,7 @@ public class core extends Thread{
     private String instruction_type;      //1->Read - 2->Write - 3->Calc
     private String direction;             //Memory Direction
     private String write_data;            //Set data to write
+    private String coherence_status;      //Set coherence status
     private String final_instruction;     //Set the final struction
     private String parse_instruction;     //Set the final struction for parse
     private String[][] cacheL1 = {{"Block", "Coherence", "Memory Dir", "Data"},{"","","",""},{"","","",""}};
@@ -24,7 +25,7 @@ public class core extends Thread{
     /**
      * Constructor of the CORE.
      */
-    public core(int core_id, int chip_id) {
+    public coreT(int core_id, int chip_id) {
         this.core_id = core_id;         //set initial id
         this.chip_id = chip_id;         //set initial processor father
         this.instruction_type = "";     //set initial instruction type
@@ -32,6 +33,7 @@ public class core extends Thread{
         this.write_data = "";           //set initial data
         this.final_instruction = "";    //set initial final instruction
         this.parse_instruction = "";    //set initial final instruction
+        this.coherence_status = "I";    //set initial value for coherence status
         this.coreStatus = true;         //set initial value for Status ->TRUE ON    ->FALSE OFF
     }
 
@@ -186,33 +188,47 @@ public class core extends Thread{
     //Function to write Cache.
     private void writeOnCache(String direction, String write_data){
         for (int i=1; i < 3; i++){
-            if (direction.equals(cacheL1[i][2])){        //If match the direction
-                this.cacheL1[i][1] = "M";                //State Modified
-                this.cacheL1[i][2] = direction;          //Write direction
-                this.cacheL1[i][3] = write_data;         //Write data
+            if (direction.equals(cacheL1[i][2])){              //If match the direction
+                this.coherence_status = "M";
+                this.cacheL1[i][1] = this.coherence_status;    //State Modified
+                this.cacheL1[i][2] = direction;                //Write direction
+                this.cacheL1[i][3] = write_data;               //Write data
             } 
         }
     }
 
-    private void MSI(String instruction_type, String direction, String write_data){
-        //EXCLUSIVE (M)
+    private void MSI(String instruction_type, String direction, String write_data, String coherence_status){
+  
         if (instruction_type.equals("WRITE")){
-            //Cpu write hit I -> M
-            if (checkOnCache(direction) == true){
-                this.writeBusMiss = false; //busmiss
-                this.writeOnCache(direction, write_data);
-                System.out.println("Write Hit"); 
-            }else{
-                //CPU write miss
-                //Write on memory
-                int i = cacheMap(direction);
-                this.cacheL1[i][1] = "M";
-                this.cacheL1[i][2] = direction;
-                this.cacheL1[i][3] = write_data;
-                //Place write miss
-                this.writeBusMiss = true;
-                System.out.println("Write Miss"); 
+            //EXCLUSIVE (M)
+            if(coherence_status.equals("M")){
+                if (checkOnCache(direction) == true){
+                    //Cpu write hit I -> M
+                    this.writeBusMiss = false; //busmiss
+                    this.writeOnCache(direction, write_data);
+                    System.out.println("Write Hit"); 
+                }else{
+                    //CPU write miss
+                    //Write on memory
+                    int i = cacheMap(direction);
+                    this.coherence_status = "M";
+                    this.cacheL1[i][1] = this.coherence_status;
+                    this.cacheL1[i][2] = direction;
+                    this.cacheL1[i][3] = write_data;
+                    //Place write miss
+                    this.writeBusMiss = true;
+                    System.out.println("Write Miss"); 
+                }
+            }else if (coherence_status.equals("S")){
+                if (checkOnCache(direction) == true){
+                    //Cpu write hit I -> M
+                    this.writeBusMiss = false; //busmiss
+                    this.writeOnCache(direction, write_data);
+                }
             }
+
+
+
 
         }else if (instruction_type.equals("READ")){
             //Cpu read hit

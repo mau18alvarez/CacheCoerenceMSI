@@ -63,9 +63,9 @@ public class Main extends Application {
           thread.setDaemon(true);
           thread.start();
     }
-    
 
     public static void main(String[] args) {
         Application.launch(args);
     }
+
 }

@@ -3,7 +3,7 @@ package app;
 public class mainMemory {
 
     //Render Memory
-    public static String[][] Render = { { "Dato" }, { "1" }, { "" }, { "" }, { "" }, { "" }, { "" }, { "" }, { "" },
+    public String[][] Render = { { "Dato" }, { "1" }, { "" }, { "" }, { "" }, { "" }, { "" }, { "" }, { "" },
                                             { "" }, { "" }, { "" }, { "" }, { "" }, { "" }, { "15" } };
 
     // We need 16 lines of Memory
@@ -169,7 +169,7 @@ public class mainMemory {
     }
 
     // Getter of the L1 memory
-    public static String[][] getRenderMem() {
+    public String[][] getMemory() {
         return Render;
-        }
+    }
 }
