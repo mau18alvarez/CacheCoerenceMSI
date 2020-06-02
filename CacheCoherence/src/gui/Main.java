@@ -1,6 +1,4 @@
 package gui;
-
-import app.chip;
 import app.mainMemory;
 
 import java.net.URL;

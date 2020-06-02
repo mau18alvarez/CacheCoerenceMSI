@@ -7,8 +7,8 @@ public class core extends Thread{
 
     Thread t;
     public boolean coreStatus;            //Core pause or running
-    public boolean writeBusMiss;          //Write bus status 
-    public boolean readBusMiss;           //Read bus status
+    private boolean writeBusMiss;          //Write bus status 
+    private boolean cacheL1Miss;           //cache miss 
 
     private int core_id;                  //Id of the core
     private int chip_id;                  //Id of the chip father
@@ -17,7 +17,8 @@ public class core extends Thread{
     private String write_data;            //Set data to write
     private String final_instruction;     //Set the final struction
     private String parse_instruction;     //Set the final struction for parse
-    private String[][] cacheL1 = {{"Block", "Coherence", "Memory Dir", "Data"},{"","","",""},{"","","",""}};
+    private String memDir = "";           //Aux String for memory
+    private String[][] cacheL1 = {{"Block", "Coherence", "Memory Dir", "Data"},{"0","","",""},{"1","","",""}};
     
     /**
      * Constructor of the CORE.
@@ -31,8 +32,11 @@ public class core extends Thread{
         this.final_instruction = "";    //set initial final instruction
         this.parse_instruction = "";    //set initial final instruction
         this.coreStatus = true;         //set initial value for Status ->TRUE ON    ->FALSE OFF
+        
+        //Set booleans status
+        this.writeBusMiss = false;      //Write bus status 
+        this.cacheL1Miss = false;       //cache miss 
     }
-
 
     public void run () {
         try{
@@ -184,6 +188,31 @@ public class core extends Thread{
         return result;
     }
 
+    //Function to check Invalid cache
+    private boolean checkInv(String direction){
+        boolean result = false;
+        for (int i=1; i < 3; i++){
+            if (direction.equals(cacheL1[i][2])){        //True if is in cache
+                if(cacheL1[i][1].equals("I")){
+                    result =  false;
+                }
+            }
+        }
+        return result;
+    }
+
+        //Function to write Cache.
+    private void writeBus(String direction){
+        int aux = cacheMap(direction);
+        for (int i=1; i < this.cacheL1.length; i++){
+            if(this.cacheL1[i][0].equals(Integer.toString(aux))){
+                this.cacheL1[i][1] = "S";
+                this.cacheL1[i][2] = this.direction;
+                this.cacheL1[i][3] = this.write_data;
+            } 
+        }
+    }
+
     //Function to write Cache.
     private void writeOnCache(String direction, String write_data){
         for (int i=1; i < 3; i++){
@@ -195,8 +224,16 @@ public class core extends Thread{
         }
     }
 
+    public void invalidCache(String direction){
+        for (int i = 1; i < this.cacheL1.length; i++) {
+            if(direction.equals(this.cacheL1[i][2])){
+                this.cacheL1[i][1] = "I";
+            }
+        }
+    }
+
     private void MSI(int core_id, int chip_id, String instruction_type, String direction, String write_data){
-        //EXCLUSIVE (M)
+        
         if (instruction_type.equals("WRITE")){
             //Write on memory
             int i = cacheMap(direction);
@@ -204,37 +241,76 @@ public class core extends Thread{
             this.cacheL1[i][2] = direction;
             this.cacheL1[i][3] = write_data;
             //Place write miss
-            System.out.println("Se esbribe en L1 proveniente de+ chip " + chip_id + " core " + core_id);
+            System.out.println("WRITE on L1 from chip " + chip_id + " core " + core_id);
+            this.memDir = direction;
+            this.write_data = write_data;
             this.writeBusMiss = true;
-            //System.out.println("Write Miss"); 
+            while(this.writeBusMiss){
+                try{
+                    Thread.sleep(1000);
+                }catch(Exception e){
+                    System.out.println("Fail in Core MSI WRITE Thread:" + e.getMessage());
+                }
+            }
+            try{
+                Thread.sleep(1000);
+            }catch(Exception e){
+                System.out.println("Fail in Core MSI WRITE2 Thread:" + e.getMessage());
+            }
             
-
         }else if (instruction_type.equals("READ")){
             //Cpu read hit
             if (checkOnCache(direction) == true){
+                System.out.println("READ on L1 from chip " + chip_id + " core " + core_id);
+                if(this.checkInv(direction)){
+                    this.direction = direction;
+                    this.cacheL1Miss = true;
+                    while(this.cacheL1Miss){
+                        try{
+                            Thread.sleep(1000);
+                        }catch(Exception e){
+                            System.out.println("Fail in Core MSI READ Thread:" + e.getMessage());
+                        }
+                    }
+                    this.writeBus(this.direction);
+                }   
                 try{
                     Thread.sleep(500);
-                    System.out.println("Read Hit"); 
                 }catch(Exception e){
-                    System.out.println("Fail in Read Thread:" + e.getMessage());
+                    System.out.println("Fail in Core MSI READ2 Thread:" + e.getMessage());
                 }
             }else{
                 //READ miss
-                this.readBusMiss = true;    //Place ReadMiss on bus
-                //System.out.println("Read Miss"); 
-                //Escribir a memoria
+                System.out.println("READ MISS on L1 from chip " + chip_id + " core " + core_id);
+                this.cacheL1Miss = true;    //Place ReadMiss
+                this.memDir = direction;
+                System.out.println("Try to get data from L2 of " + chip_id + " core " + core_id);
+                while(this.cacheL1Miss){
+                    try{
+                        Thread.sleep(1000);
+                    }catch(Exception e){
+                        System.out.println("Fail in Core MSI READ L2 Thread:" + e.getMessage());
+                    }
+                }
+                System.out.println("Updating L1 of " + chip_id + " core " + core_id + "with L2 data");
+                this.writeBus(this.direction);
             }
 
         }else if (instruction_type.equals("CALC")){
+            System.out.println("CALC operation in" + chip_id + " core " + core_id);
             try{
-                Thread.sleep(500);
-                //System.out.println("Calc"); 
+                Thread.sleep(1000);
             }catch(Exception e){
-                //System.out.println("Fail in Calc Thread:" + e.getMessage());
+                System.out.println("Fail in Core MSI CALC Thread:" + e.getMessage());
             }
         }
     }
-    
+
+    /**
+     * -----------------------------------------------MSI AUXILIARS------------------------------------------------------------------------
+     */
+
+
      /**
      * -----------------------------------------------GETTERS AND SETTERS------------------------------------------------------------------------
      */
@@ -253,9 +329,41 @@ public class core extends Thread{
         return write_data;
     }
 
+    //Setter of the data
+    public void setData(String data){
+        this.write_data = data;
+    }
+
     //Getter of the final instrucion
     public String getFinalInstr() {
         return final_instruction;
+    }
+
+    //Getter of the core id
+    public String getCoreId(){
+        return Integer.toString(this.core_id);
+    }
+    
+    //Getter of the l1 miss
+    public boolean getCacheL1Miss(){
+        return cacheL1Miss;
+    }
+
+    public boolean missL1(){
+        return cacheL1Miss;
+    }
+
+    public boolean BusWr() {
+        return writeBusMiss;
+    }
+
+    public void setBusWr(boolean bus) {
+        writeBusMiss = bus;
+    }
+
+    //Setter of the l1 miss
+    public void setCacheL1Miss(boolean miss){
+        cacheL1Miss = miss;
     }
 
     //Getter of the L1 memory
