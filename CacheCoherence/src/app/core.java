@@ -1,6 +1,7 @@
 package app;
 
 import java.util.Random;
+import gui.log;
 
 
 public class core extends Thread{
@@ -18,12 +19,14 @@ public class core extends Thread{
     private String final_instruction;     //Set the final struction
     private String parse_instruction;     //Set the final struction for parse
     private String memDir = "";           //Aux String for memory
+    private log logging;
     private String[][] cacheL1 = {{"Block", "Coherence", "Memory Dir", "Data"},{"0","","",""},{"1","","",""}};
     
     /**
      * Constructor of the CORE.
      */
-    public core(int core_id, int chip_id) {
+    public core(String msg, int core_id, int chip_id) {
+        super(msg);
         this.core_id = core_id;         //set initial id
         this.chip_id = chip_id;         //set initial processor father
         this.instruction_type = "";     //set initial instruction type
@@ -306,14 +309,14 @@ public class core extends Thread{
         }
     }
 
-    /**
-     * -----------------------------------------------MSI AUXILIARS------------------------------------------------------------------------
-     */
-
-
      /**
      * -----------------------------------------------GETTERS AND SETTERS------------------------------------------------------------------------
      */
+
+    public void newLog(String msg){
+        this.logging.newInfo(msg);
+    }
+
     //Getter of the instruction (READ,WRITE,CALC)
     public String getInstruction() {
         return instruction_type;
