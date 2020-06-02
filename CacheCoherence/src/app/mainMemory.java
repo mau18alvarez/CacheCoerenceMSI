@@ -1,5 +1,6 @@
 package app;
 import java.util.concurrent.Semaphore;
+import gui.log;
 
 public class mainMemory extends Thread{
 
@@ -9,6 +10,8 @@ public class mainMemory extends Thread{
     private String data= "";
     private boolean runMain = true;
     private static Semaphore mutex = new Semaphore(1);
+    private log logging;
+    private String logName;
 
     //Render Memory
     public String[][] memory = {{ "Block", "Owner", "Data" },   {"0000","","0000" }, 
@@ -32,6 +35,8 @@ public class mainMemory extends Thread{
     public mainMemory(){
         this.chip0 = new chip(0, true);
         this.chip1 = new chip(1, true);
+        this.logName = "Test";
+        this.logging = new log(this.logName);
     }
 
     
@@ -77,7 +82,7 @@ public class mainMemory extends Thread{
           try{
             Thread.sleep(1000);
           }catch(Exception e){
-              System.out.println(e.getMessage());
+            logging.newInfo(e.getMessage());
           }
           this.chip0.setBusMiss(false);
           
@@ -87,7 +92,7 @@ public class mainMemory extends Thread{
           try{
             Thread.sleep(1000);
           }catch(Exception e){
-              System.out.println(e.getMessage());
+            logging.newInfo(e.getMessage());
           }
           this.chip1.setBusMiss(false);
           
@@ -128,14 +133,14 @@ public class mainMemory extends Thread{
   }
 
     public void run(){
-        System.out.println("Iniciando Chips");
+        //System.out.println("Iniciando Chips");
         this.chip0.start();
         this.chip1.start(); 
         while(this.runMain){
             try {
               mutex.acquire();
             } catch (Exception e) {
-              System.out.println(e.getMessage());
+              logging.newInfo(e.getMessage());
             }
             this.writeManage();
             this.memoryManage();

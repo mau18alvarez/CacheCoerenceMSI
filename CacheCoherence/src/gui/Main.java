@@ -1,5 +1,6 @@
 package gui;
 import app.mainMemory;
+import gui.log;
 
 import java.net.URL;
 import javafx.application.Application;

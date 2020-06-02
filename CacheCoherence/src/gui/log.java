@@ -22,7 +22,7 @@ public class log {
       try {
         // This block configure the logger with handler and formatter  
         this.logger = Logger.getLogger(this.fileName);
-        this.fh = new FileHandler("Logs\\" + fileName + ".log");
+        this.fh = new FileHandler("logFiles\\" + fileName + ".log");
         this.logger.addHandler(this.fh);
         SimpleFormatter formatter = new SimpleFormatter();
         this.fh.setFormatter(formatter);

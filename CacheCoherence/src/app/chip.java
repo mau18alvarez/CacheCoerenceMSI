@@ -1,6 +1,7 @@
 package app;
 
 import java.util.concurrent.Semaphore;
+import gui.log;
 
 public class chip extends Thread{
 
@@ -17,6 +18,8 @@ public class chip extends Thread{
     private String reqId = "";
     private String[][] cacheL2 = {{"Block", "Coherence", "Owner", "Memory Dir", "Data"},{"0","","","",""},{"1","","","",""},{"2","","","",""},{"3","","","",""}};
     private String[] L2Row;
+    private log logging;
+    private String logName;
     
     private core core0;
     private core core1;
@@ -28,9 +31,10 @@ public class chip extends Thread{
         this.chip_id = chip_id;
         this.core0 = new core(0, chip_id);
         this.core1 = new core(1, chip_id);
+        this.logName = "Test";
+        this.logging = new log(this.logName);
 
     }
-
 
     /**
      * -----------------------------------------------MSI------------------------------------------------------------------------
@@ -39,25 +43,25 @@ public class chip extends Thread{
     public void missL1Controller(){
         //Check if there is a miss
         if(core0.missL1() == true){
-            System.out.println("Searching on first L2");
+            logging.newInfo("Searching on first L2");
             this.memMiss = core0.getMemDir();
             //Check if data is on cache
             if (checkOnCache(this.memMiss) == false){
-                System.out.println("Data from chip " + chip_id + " core " + core0.getCoreId() + "not found in L2");
+                logging.newInfo("Data from chip " + chip_id + " core " + core0.getCoreId() + "not found in L2");
                 this.missL2 = true;
                 this.reqId = core0.getCoreId();
-                System.out.println("Searching on second L2");
+                logging.newInfo("Searching on second L2");
                 while(this.missL2){
                     try{
                         Thread.sleep(1000);
                     }catch(Exception e){
-                        System.out.println("Fail in L1 Controller:" + e.getMessage());
+                        logging.newInfo("Fail in L1 Controller:" + e.getMessage());
                     }
                 }
                 if(this.isFromL2){
                     this.core1.setData(this.getCacheL2Data(this.memMiss));
                 }else{
-                    System.out.println("Writing data in L2 from" + chip_id + " core " + core0.getCoreId());
+                    logging.newInfo("Writing data in L2 from" + chip_id + " core " + core0.getCoreId());
                     this.writeOnL2(this.L2Row);
                     this.core0.setData(this.getCacheL2Data(this.memMiss));
                 }
@@ -67,26 +71,26 @@ public class chip extends Thread{
             this.core0.setCacheL1Miss(false);
 
         }else if (core1.missL1() == true){
-            System.out.println("Searching on first L2");
+            logging.newInfo("Searching on first L2");
             this.memMiss = core1.getMemDir();
             //Check if data is on cache
             if (checkOnCache(this.memMiss) == false){
-                System.out.println("Data from chip " + chip_id + " core " + core1.getCoreId() + " not found in L2");
+                logging.newInfo("Data from chip " + chip_id + " core " + core1.getCoreId() + " not found in L2");
                 this.missL2 = true;
                 this.reqId = core1.getCoreId();
-                System.out.println("Searching on second L2");
+                logging.newInfo("Searching on second L2");
                 while(this.missL2){
-                    System.out.println("Writing on second L2");
+                    logging.newInfo("Writing on second L2");
                     try{
                         Thread.sleep(1000);
                     }catch(Exception e){
-                        System.out.println("Fail in L1 Controller:" + e.getMessage());
+                        logging.newInfo("Fail in L1 Controller:" + e.getMessage());
                     }
                 }
                 if(this.isFromL2){
                     this.core1.setData(this.getCacheL2Data(this.memMiss));
                 }else{
-                    System.out.println("Writing data in L2 from" + chip_id + " core " + core0.getCoreId());
+                    logging.newInfo("Writing data in L2 from" + chip_id + " core " + core0.getCoreId());
                     this.writeOnL2(this.L2Row);
                     this.core1.setData(this.getCacheL2Data(this.memMiss));
                 }
@@ -109,7 +113,7 @@ public class chip extends Thread{
                 try {
                     Thread.sleep(1000);
                 }catch (Exception e){
-                    System.out.println("Fail on Bus Manage" + e.getMessage());
+                    logging.newInfo("Fail on Bus Manage" + e.getMessage());
             }
         }
         this.core0.setBusWr(false);
@@ -123,7 +127,7 @@ public class chip extends Thread{
                 try {
                     Thread.sleep(1000);
                 }catch (Exception e){
-                    System.out.println("Fail on Bus2 Manage" + e.getMessage());
+                    logging.newInfo("Fail on Bus2 Manage" + e.getMessage());
             }
         }
         this.core1.setBusWr(false);
@@ -254,7 +258,7 @@ public class chip extends Thread{
             try {
                 mutex.acquire();
             }catch (Exception e){
-                System.out.println("Error on mutex" + e.getMessage());
+                logging.newInfo("Error on mutex" + e.getMessage());
             }
             this.BusManage();
             this.missL1Controller();
