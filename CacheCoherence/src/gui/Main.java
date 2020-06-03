@@ -62,6 +62,10 @@ public class Main extends Application {
           thread.start();
     }
 
+   /**
+     * ----------------------------------------------RUN MAIN APPLICATION WITH THE INTERFACE-------------------------------------------------------------------
+     */
+
     public static void main(String[] args) {
         Application.launch(args);
     }

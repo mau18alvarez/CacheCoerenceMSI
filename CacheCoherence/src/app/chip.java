@@ -31,7 +31,7 @@ public class chip extends Thread{
         this.chip_id = chip_id;
         this.core0 = new core(0, chip_id);
         this.core1 = new core(1, chip_id);
-        this.logName = "Test";
+        this.logName = "LogFile";
         this.logging = new log(this.logName);
 
     }
@@ -43,14 +43,14 @@ public class chip extends Thread{
     public void missL1Controller(){
         //Check if there is a miss
         if(core0.missL1() == true){
-            logging.newInfo("Searching on first L2");
+            logging.newInfo("Searching on first L2 from" + chip_id + " core " + core1.getCoreId());
             this.memMiss = core0.getMemDir();
             //Check if data is on cache
             if (checkOnCache(this.memMiss) == false){
-                logging.newInfo("Data from chip " + chip_id + " core " + core0.getCoreId() + "not found in L2");
+                logging.newInfo("Data from chip " + chip_id + " core " + core0.getCoreId() + " not found in L2");
                 this.missL2 = true;
                 this.reqId = core0.getCoreId();
-                logging.newInfo("Searching on second L2");
+                logging.newInfo("Searching on second L2 from " + chip_id + " core " + core1.getCoreId());
                 while(this.missL2){
                     try{
                         Thread.sleep(1000);
@@ -61,7 +61,7 @@ public class chip extends Thread{
                 if(this.isFromL2){
                     this.core1.setData(this.getCacheL2Data(this.memMiss));
                 }else{
-                    logging.newInfo("Writing data in L2 from" + chip_id + " core " + core0.getCoreId());
+                    logging.newInfo("Writing data in L2 from " + chip_id + " core " + core0.getCoreId());
                     this.writeOnL2(this.L2Row);
                     this.core0.setData(this.getCacheL2Data(this.memMiss));
                 }
@@ -71,16 +71,16 @@ public class chip extends Thread{
             this.core0.setCacheL1Miss(false);
 
         }else if (core1.missL1() == true){
-            logging.newInfo("Searching on first L2");
+            logging.newInfo("Searching on first L2 from " + chip_id + " core " + core1.getCoreId());
             this.memMiss = core1.getMemDir();
             //Check if data is on cache
             if (checkOnCache(this.memMiss) == false){
                 logging.newInfo("Data from chip " + chip_id + " core " + core1.getCoreId() + " not found in L2");
                 this.missL2 = true;
                 this.reqId = core1.getCoreId();
-                logging.newInfo("Searching on second L2");
+                logging.newInfo("Searching on second L2 from " + chip_id + " core " + core1.getCoreId());
                 while(this.missL2){
-                    logging.newInfo("Writing on second L2");
+                    logging.newInfo("Writing on second L2 from " + chip_id + " core " + core1.getCoreId());
                     try{
                         Thread.sleep(1000);
                     }catch(Exception e){
@@ -90,7 +90,7 @@ public class chip extends Thread{
                 if(this.isFromL2){
                     this.core1.setData(this.getCacheL2Data(this.memMiss));
                 }else{
-                    logging.newInfo("Writing data in L2 from" + chip_id + " core " + core0.getCoreId());
+                    logging.newInfo("Writing data in L2 from " + chip_id + " core " + core0.getCoreId());
                     this.writeOnL2(this.L2Row);
                     this.core1.setData(this.getCacheL2Data(this.memMiss));
                 }

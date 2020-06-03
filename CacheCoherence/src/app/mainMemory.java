@@ -35,7 +35,7 @@ public class mainMemory extends Thread{
     public mainMemory(){
         this.chip0 = new chip(0, true);
         this.chip1 = new chip(1, true);
-        this.logName = "Test";
+        this.logName = "LogFile";
         this.logging = new log(this.logName);
     }
 
@@ -53,7 +53,7 @@ public class mainMemory extends Thread{
              }else{
                 this.readMem(this.chip0.getMemDir(),this.chip0.getCpuId());
                 int bloque = Integer.parseInt(chip0.getMemDir(),2) % 4;
-                String owner = chip0.getCpuId()+","+chip0.getReqId();
+                String owner = "P" + chip0.getCpuId()+":"+chip0.getReqId();
                 String[] Row = {Integer.toString(bloque),"DS",owner,chip0.getMemDir(),this.data};
                 this.chip0.setL2Row(Row);
             }
@@ -67,7 +67,7 @@ public class mainMemory extends Thread{
              }else{
                 this.readMem(this.chip1.getMemDir(),this.chip1.getCpuId());
                 int bloque = Integer.parseInt(chip1.getMemDir(),2) % 4;
-                String owner = chip1.getCpuId()+","+chip1.getReqId();
+                String owner = "P" + chip1.getCpuId() + ":" +chip1.getReqId();
                 String[] Row = {Integer.toString(bloque),"DS",owner,chip0.getMemDir(),this.data};
                 this.chip1.setL2Row(Row);
             }
@@ -103,12 +103,13 @@ public class mainMemory extends Thread{
   private void writeMem(String direction, String data, String reqId){
     for (int i = 1; i < memory.length; i++) {
       if(direction.equals(memory[i][0])){
+        //System.out.println("DEBUG" + memory[i][1]);
         if(this.memory[i][1].equals("")){
           memory[i][1] = reqId;
-        } else if(this.memory[i][1].equals("P0")){
-          memory[i][1] += ", P1";
-        } else if(this.memory[i][1].equals("P1")){
-          memory[i][1] += ", P0";
+        } else if(this.memory[i][1].equals("0")){
+          memory[i][1] += ",1";
+        } else if(this.memory[i][1].equals("1")){
+          memory[i][1] += ",0";
         }
         memory[i][2] = data; 
       }
@@ -121,11 +122,11 @@ public class mainMemory extends Thread{
         if(this.memory[i][1].equals("")){
           this.memory[i][1] = reqId;
 
-        }else if(memory[i][1].equals("P0")){
-          this.memory[i][1] += ", P1";
+        }else if(memory[i][1].equals("0")){
+          this.memory[i][1] += ", 1";
 
-        }else if(memory[i][1].equals("P1")){
-          this.memory[i][1] += ", P0";
+        }else if(memory[i][1].equals("1")){
+          this.memory[i][1] += ", 0";
         }
         this.data = this.memory[i][2];
       }

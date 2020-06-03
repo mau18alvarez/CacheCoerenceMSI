@@ -41,7 +41,7 @@ public class core extends Thread{
         this.writeBusMiss = false;      //Write bus status 
         this.cacheL1Miss = false;       //cache miss 
 
-        this.logName = "Test";
+        this.logName = "LogFile";
         this.logging = new log(this.logName);
     }
 
@@ -50,16 +50,10 @@ public class core extends Thread{
             while(coreStatus == true){
                 this.generate_instruction();         //set the instruction
                 this.generate_final_inst(chip_id, core_id, instruction_type, direction, write_data); //set the final instruction
-                logging.newInfo(this.final_instruction);
+                logging.newInfo(this.final_instruction); //LOG FILE
                 this.generate_parse_inst(chip_id, core_id, instruction_type, direction, write_data); //set the final instruction for parse
                 this.MSI(core_id, chip_id, instruction_type, direction, write_data);
                 Thread.sleep(1000);                  //Generate requests every second
-                //Set the values to print on Interface
-                //this.cacheL1[1][0] = Integer.toString(core_id);
-                //this.cacheL1[1][1] = instruction_type;
-                //this.cacheL1[1][2] = direction;
-                //this.cacheL1[1][3] = write_data;
-                //System.out.println(this.final_instruction); 
             }
         }catch (InterruptedException e){
            logging.newInfo("Fail in Core Main Thread:" + e.getMessage());
@@ -112,9 +106,9 @@ public class core extends Thread{
      * Creation of a new memory direction.
      */
     private String generate_mem_dir( ){
-        //int random = Binomial(16, 0.1);
         Random rand = new Random();
         int random = rand.nextInt(16);
+        //int random = Binomial(16, 0.1);
         String result =  Integer.toBinaryString(random);
 
         if (random == 0 || random == 1){
@@ -135,8 +129,6 @@ public class core extends Thread{
      * Creation of a new instruction and set the data.
      */
     public void generate_instruction( ){
-        //logging.newInfo("Generando instruccion");
-        //System.out.println("Generando instuccion");
         int random = Binomial(3, 0.34);
 
         if (random == 0){
@@ -249,8 +241,8 @@ public class core extends Thread{
             this.cacheL1[i][1] = "M";
             this.cacheL1[i][2] = direction;
             this.cacheL1[i][3] = write_data;
-            //Place write miss
-            logging.newInfo("WRITE on L1 from chip " + chip_id + " core " + core_id);
+            //Place write 
+            logging.newInfo("WRITE from chip " + chip_id + " core " + core_id);
             this.memDir = direction;
             this.write_data = write_data;
             this.writeBusMiss = true;
@@ -301,7 +293,7 @@ public class core extends Thread{
                         logging.newInfo("Fail in Core MSI READ L2 Thread:" + e.getMessage());
                     }
                 }
-                logging.newInfo("Updating L1 of " + chip_id + " core " + core_id + "with L2 data");
+                logging.newInfo("Updating L1 of " + chip_id + " core " + core_id + "with Memory data");
                 this.writeBus(this.direction);
             }
 

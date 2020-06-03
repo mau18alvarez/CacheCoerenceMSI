@@ -35,7 +35,7 @@ public class log {
   
     //Methods
     public void newInfo(String msg){
-      this.logger.info(msg);
+      this.logger.info(msg +  "\n");
     }
   
     public void newWarn(String msg){
